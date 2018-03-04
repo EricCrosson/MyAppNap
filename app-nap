@@ -1,10 +1,8 @@
-#!/usr/bin/python                                                                                            
+#!/usr/bin/python
+# Written by omikun
+# Patched by Eric Crosson
+# 2018-03-03
 
-''' This script automatically finds PIDs for desiredApp
-    and suspend those processes whenever desired app  is not in focus. 
-    This script is meant to stay running and polls window focus every 1 second
-    On receiving keyboard interrupt, will resume
-'''
 from datetime import datetime
 from time import sleep
 import sys
@@ -29,18 +27,18 @@ def get_pid(name):
         return None
 
 # if script invoked with an argument, use that as the pid
-desiredApp = 'asfjsadfjasdflkjasf'
+desiredApp = '0xDEADBEEF'
 if len(sys.argv) > 1:
     da = sys.argv[1]
     if da == 'Terminal':
-        print("Can't suspend Terminal, especially if you are calling from Terminal")
+        print("Aborting: will not suspend Terminal")
     else:
-        desiredApp = da
+        desiredApp = da.capitalize()
 
 pids = get_pid(desiredApp)
 
 if pids:
-    print("Monitoring %s, with PIDs: %s" % (desiredApp, pids))
+    print("Monitoring {} PIDs: {}".format(desiredApp, pids))
 
 try:
     last_active_app = None
@@ -49,24 +47,24 @@ try:
         active_app = NSWorkspace.sharedWorkspace().activeApplication()
         if last_active_app != active_app['NSApplicationName']:
             last_active_app = active_app['NSApplicationName']
-            print("Currently focused on", last_active_app)
+            print("> Current focus: {}".format(last_active_app))
             if last_active_app == desiredApp:
                 stop = True
                 if pids:
-                    print("Continuing", desiredApp)
+                    print("> Resuming {}...".format(desiredApp))
                     for pid in pids:
                         os.kill(int(pid), signal.SIGCONT)
             elif stop:
                 stop = False
                 if pids:
-                    print("Stopping", desiredApp)
+                    print("> Stopping {}...".format(desiredApp))
                     for pid in pids:
                         os.kill(int(pid), signal.SIGSTOP)
         sleep(1)
-except KeyboardInterrupt:
-    print('\nExiting script')
+except:
+    print("\n> Exiting script")
     if pids:
-        print('\nResuming %s' % desiredApp)
+        print("> Resuming {}".format(desiredApp))
         for pid in pids:
             os.kill(int(pid), signal.SIGCONT)
     sys.exit()
