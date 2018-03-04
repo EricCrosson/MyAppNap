@@ -14,6 +14,8 @@ app-nap Unity
 
 - [ ] Integrate with rumps so this can be accessed from the status bar instead of terminal
 - [ ] Select multiple apps to nap at the same time
+- [ ] Standardize logging
+- [ ] Add helpstring
 
 ## Acknowledgements
 

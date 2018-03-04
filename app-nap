@@ -47,7 +47,7 @@ try:
         active_app = NSWorkspace.sharedWorkspace().activeApplication()
         if last_active_app != active_app['NSApplicationName']:
             last_active_app = active_app['NSApplicationName']
-            print("> Current focus: {}".format(last_active_app))
+            # print("> Current focus: {}".format(last_active_app))
             if last_active_app == desiredApp:
                 stop = True
                 if pids:
@@ -62,9 +62,10 @@ try:
                         os.kill(int(pid), signal.SIGSTOP)
         sleep(1)
 except:
-    print("\n> Exiting script")
+    print("\n> Interrupt-signal recieved")
     if pids:
         print("> Resuming {}".format(desiredApp))
         for pid in pids:
             os.kill(int(pid), signal.SIGCONT)
+    print("> Exiting script")
     sys.exit()
